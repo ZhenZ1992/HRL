@@ -27,19 +27,16 @@ class Task:
 
 class Scheduler:
     def calculate_transmission_time(subtask1, subtask2, bandwidth):
-        """
-        计算两个子任务之间的数据传输时间
-        """
+
         if subtask1.server == subtask2.server:
-            # 两个子任务在同一服务器上，传输时间可以忽略
             return 0
         else:
             min_bandwidth = min(subtask1.server.bandwidth, subtask2.server.bandwidth)
-            data_size = subtask2.size  # 假设数据传输大小等于子任务2的大小
+            data_size = subtask2.size  
             return data_size / min_bandwidth
 
     def calculate_start_time(self, subtask, processor, bandwidth):
-        # 考虑数据传输时间、前驱子任务完成时间和处理器空闲时间
+
         if subtask.predecessor_id is not None:
             predecessor = self.get_subtask_by_id(subtask.predecessor_id)
             transmission_time = self.calculate_transmission_time(subtask, predecessor, bandwidth)
@@ -111,7 +108,6 @@ class Scheduler:
         network_utilization = server.network_usage / server.network_capacity
         disk_utilization = server.disk_usage / server.disk_capacity
 
-        # 返回资源使用率字典
         return {
             'cpu': cpu_utilization,
             'gpu': gpu_utilization,
