@@ -31,16 +31,13 @@ class MAGNA(tf.keras.layers.Layer):
         self.num_heads = num_heads
         self.dropout_rate = dropout_rate
 
-        # 定义嵌入层
         self.embedding = Embedding(num_features, 64)
 
-        # 定义注意力层
         self.attention_layers = [
             tf.keras.layers.Attention(num_heads=num_heads, dropout=dropout_rate)
             for _ in range(num_layers)
         ]
 
-        # 定义前馈网络
         self.ffn_layers = [
             tf.keras.Sequential([
                 Dense(64, activation="relu", kernel_regularizer=l2(1e-5)),
@@ -51,21 +48,14 @@ class MAGNA(tf.keras.layers.Layer):
         ]
 
     def call(self, inputs, adj_matrix, training=False):
-        # 获取节点特征和邻接矩阵
+
         x = self.embedding(inputs)
 
-        # 多跳注意力机制
         for i in range(self.num_layers):
-            # 计算注意力权重
+
             attention_weights = self.attention_layers[i]([x, x], mask=adj_matrix)
-
-            # 融合节点特征
             x = tf.matmul(attention_weights, x, transpose_a=True)
-
-            # 前馈网络
             x = self.ffn_layers[i](x)
-
-            # 归一化
             x = LayerNormalization()(x)
 
         return x
